@@ -6,7 +6,7 @@
 # Author contact: victor.boas@fatec.sp.gov.br
 
 # Variables
-DIR_LOG="/vagrant/logs"
+DIR_LOG="/vagrant/logs" 
 LOG_FILE_NAME="provision.log"
 ARQ_LOG="$DIR_LOG/$LOG_FILE_NAME"
 LOG_INIT_MSG="$DATE $USER: [$?]"
@@ -25,6 +25,7 @@ log_register() {
 check_directory() {
     if [ -d "$DIR_LOG" ]; then
         log_register "The log directory $DIR_LOG already exists."
+        rm -rf $DIR_LOG/*
     else
         log_register "The log directory $DIR_LOG doesn't exist, we'll try to create it for you"
         if mkdir -p "$DIR_LOG" >/dev/null 2>&1; then
@@ -84,9 +85,8 @@ start_apache(){
 
 # Function to show script completion message
 msg_finish(){
-    clear
+    echo "$LOG_INIT_MSG End of execution of the provisioning script." >> "$ARQ_LOG"
     cat << EOF 
-        $LOG_INIT_MSG End of execution of the provisioning script.
         End of script execution, check the logs in $ARQ_LOG
         You can access the website URL: localhost:8001
 EOF
@@ -94,8 +94,8 @@ EOF
 
 # Main function to execute the script
 main(){
-    systemupdate
     check_directory
+    systemupdate
     install_webserver
     install_git
     cloning_repository
